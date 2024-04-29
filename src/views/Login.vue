@@ -12,7 +12,7 @@
                 <el-form-item prop="验证码">
                     <el-input placeholder="验证码" prefix-icon="el-icon-loading" style="width: 200px;float: left;"
                         maxlength="4" />
-                    <el-image class="captchaImg" style="width: 150px; float: left;" />
+                    <el-image class="captchaImg" style="width: 150px; float: left;" :src="image" @click="getCaptcha" />
                 </el-form-item>
                 <el-form-item>
                     <el-row :gutter="20">
@@ -31,7 +31,29 @@
 </template>
 <script>
 export default {
-    name: "Login"
+    name: "Login",
+    data() {
+        return {
+            image: ""
+
+        }
+    },
+    methods: {
+        // 获取验证码
+        async getCaptcha() {
+            const { data: res } = await this.$api.captcha()
+            console.log("获取验证码res数据：", res)
+            if (res.code !== 200) {
+                this.$message.error(res.message)
+            } else {
+                this.image = res.data.image
+            }
+        }
+
+    },
+    created() {
+        this.getCaptcha()
+    }
 }
 </script>
 
