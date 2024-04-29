@@ -9,7 +9,7 @@ export default {
      * @returns {Object} 返回解析后的本地存储对象，如果不存在则返回空对象
      */
     getStorage() {
-        return JSON.parse(window.localStorage.getItem(process.env.VUE_APP_BASE_API) || '{}')
+        return JSON.parse(window.localStorage.getItem(process.env.VUE_APP_NAME_SPACE) || '{}')
     },
 
     /**
@@ -20,7 +20,7 @@ export default {
     setItem(key, val) {
         let storage = this.getStorage() // 获取当前存储对象
         storage[key] = val // 设置键名对应的值
-        window.localStorage.setItem(process.env.VUE_APP_BASE_API, JSON.stringify(storage)) // 将更新后的存储对象重新存储至localStorage
+        window.localStorage.setItem(process.env.VUE_APP_NAME_SPACE, JSON.stringify(storage)) // 将更新后的存储对象重新存储至localStorage
     },
 
     /**

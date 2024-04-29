@@ -90,6 +90,11 @@ export default {
                     if (res.code !== 200) {
                         this.$message.error(res.msg)
                     } else {
+                        //存储token
+                        this.$store.commit('saveSysAdmin', res.data.sysAdmin)
+                        this.$store.commit('saveToken', res.data.token)
+                        this.$store.commit('saveLeftMenuList', res.data.leftMenuList)
+                        this.$store.commit('savePermissionList', res.data.permissionList)
                         // 跳转到后台主页
                         this.$router.push("/home")
                         // 提示登录成功
