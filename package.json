@@ -10,7 +10,7 @@
   "dependencies": {
     "@riophae/vue-treeselect": "^0.4.0",
     "axios": "^0.27.2",
-    "core-js": "^3.8.3",
+    "core-js": "^3.37.0",
     "echarts": "^5.1.2",
     "element-ui": "^2.15.6",
     "less": "^4.1.1",

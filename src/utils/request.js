@@ -3,6 +3,7 @@
 import { Message } from "element-ui"
 import axios from 'axios'
 import router from "@/router/router"
+import storage from "./storage"
 
 
 // 创建axios对象，添加全局配置
@@ -15,8 +16,9 @@ const service = axios.create({
 service.interceptors.request.use((req) => {
     const header = req.headers
     // 添加token
+    const token = storage.getItem('token') || {}
     if (!header.Authorization) {
-        header.Authorization = 'Bearer + xiaoRui'
+        header.Authorization = token
     }
     return req
 })
@@ -28,12 +30,14 @@ service.interceptors.response.use((res) => {
         Message.error(message);
         setTimeout(() => {
             // todo 清除存储信息
+            storage.clearAll()
             router.push('/login')
         }, 1500)
     } else if (code === 406) {
         Message.error(message);
         setTimeout(() => {
             // todo 清除存储信息
+            storage.clearAll()
             router.push('/login')
         }, 1500)
     } else {
