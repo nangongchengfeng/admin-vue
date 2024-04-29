@@ -31,27 +31,34 @@
 </template>
 <script>
 export default {
-    name: "Login",
+    name: "Login", // 定义组件名称为"Login"
     data() {
         return {
-            image: ""
-
+            image: "" // 用于存储验证码图片的URL
         }
     },
     methods: {
-        // 获取验证码
+        /**
+         * 异步方法，用于获取验证码
+         * 没有参数
+         * 没有返回值，但是会更新组件的data中的image属性
+         */
         async getCaptcha() {
+            // 调用api获取验证码
             const { data: res } = await this.$api.captcha()
             console.log("获取验证码res数据：", res)
+            // 验证码获取失败时的处理
             if (res.code !== 200) {
                 this.$message.error(res.message)
             } else {
+                // 验证码获取成功时，更新image属性
                 this.image = res.data.image
             }
         }
 
     },
     created() {
+        // 组件创建时调用getCaptcha方法获取验证码
         this.getCaptcha()
     }
 }
