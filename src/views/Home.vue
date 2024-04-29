@@ -44,6 +44,7 @@
         <el-container>
             <el-header>
                 <div class="fold-btn">
+                    <i :class="collapseBtnClass"></i>
                 </div>
             </el-header>
             <el-main><router-view /></el-main>
@@ -60,6 +61,7 @@ export default {
         return {
             leftMenuList: storage.getItem("leftMenuList"),
             activePath: '',
+            collapseBtnClass: "el-icon-s-fold",
         };
     },
     computed: {
@@ -85,6 +87,8 @@ export default {
 <style lang="less" scoped>
 .home-container {
     height: 100%;
+
+
 
     .el-aside {
         background-color: #304156;
@@ -122,7 +126,16 @@ export default {
     }
 
     .el-header {
-        background-color: f7fafd;
+        background-color: #f9fafc;
+        align-items: center;
+        justify-content: space-between;
+        display: flex;
+
+        .fold-btn {
+            padding-top: 2px;
+            font-size: 23px;
+            cursor: pointer;
+        }
     }
 
     .el-main {
