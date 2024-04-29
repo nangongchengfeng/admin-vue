@@ -8,7 +8,7 @@
                 </h3>
 
             </div>
-            <el-menu background-color="#304156" text-color="#fff">
+            <el-menu background-color="#304156" text-color="#fff" unique-opened router>
                 <!--
                 循环遍历noChildren数组中的每个项目，生成无子集菜单的<el-menu-item>元素。
                 :index 通过拼接'/'和item.url为每个菜单项设置唯一标识。
@@ -40,13 +40,17 @@
             </el-menu>
         </el-aside>
         <el-container>
-            <el-header>header</el-header>
-            <el-main>main</el-main>
+            <el-header>
+                <div class="fold-btn">
+                </div>
+            </el-header>
+            <el-main><router-view /></el-main>
         </el-container>
 
     </el-container>
 </template>
 <script>
+import router from '@/router/router';
 import storage from '@/utils/storage';
 export default {
     name: "Home",
@@ -58,15 +62,16 @@ export default {
     computed: {
         // 无子集
         noChildren() {
-            return this.leftMenuList.filter(item => !item.menuSvoList)
+            return this.leftMenuList.filter(item => !item.menuSvoList);
         },
         // 有子集
         hasChildren() {
-            return this.leftMenuList.filter(item => item.menuSvoList)
+            return this.leftMenuList.filter(item => item.menuSvoList);
         }
     },
     created() { },
-    methods: {}
+    methods: {},
+    components: { router }
 };
 </script>
 <style lang="less" scoped>

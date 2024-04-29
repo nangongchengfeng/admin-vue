@@ -7,9 +7,16 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/views/Login.vue'
 import Home from '@/views/Home.vue'
-import Welcome from '@/views/Welcome.vue'
 import storage from '@/utils/storage'
-
+import Admin from "@/views/base/Admin"
+import Role from "@/views/base/Role"
+import Welcome from "@/views/Welcome"
+import Menu from "@/views/base/Menu"
+import Dept from "@/views/base/Dept"
+import Post from "@/views/base/Post"
+import Personal from "@/views/Personal"
+import Operator from "@/views/monitor/Operator"
+import LoginLog from "@/views/monitor/LoginLog"
 
 /**
  * 注册一个全局的插件到 Vue。
@@ -40,6 +47,37 @@ const router = new Router({
                 {
                     path: '/welcome',
                     component: Welcome
+                }, {
+                    path: '/personal',
+                    component: Personal
+                },
+                {
+                    path: '/base/Admin',
+                    component: Admin
+                },
+                {
+                    path: '/base/Role',
+                    component: Role
+                },
+                {
+                    path: '/base/Menu',
+                    component: Menu
+                },
+                {
+                    path: '/base/Dept',
+                    component: Dept
+                },
+                {
+                    path: '/base/Post',
+                    component: Post
+                },
+                {
+                    path: '/monitor/Operator',
+                    component: Operator
+                },
+                {
+                    path: '/monitor/LoginLog',
+                    component: LoginLog
                 }
             ]
         }
