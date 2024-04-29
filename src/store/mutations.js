@@ -21,4 +21,8 @@ export default {
         state.permissionList = permissionList
         storage.setItem('permissionList', permissionList)
     },
+    saveActivePath(state, activePath) {
+        state.activePath = activePath
+        storage.setItem('activePath', activePath)
+    }
 }

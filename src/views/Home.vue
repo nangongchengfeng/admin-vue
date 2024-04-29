@@ -8,13 +8,14 @@
                 </h3>
 
             </div>
-            <el-menu background-color="#304156" text-color="#fff" unique-opened router>
+            <el-menu background-color="#304156" text-color="#fff" unique-opened router :default-active="$route.path">
                 <!--
                 循环遍历noChildren数组中的每个项目，生成无子集菜单的<el-menu-item>元素。
                 :index 通过拼接'/'和item.url为每个菜单项设置唯一标识。
                 :key    使用item.menuName作为Vue中v-for循环的唯一键值。
                 -->
-                <el-menu-item :index="'/' + item.url" v-for="item in noChildren" :key="item.menuName">
+                <el-menu-item :index="'/' + item.url" v-for="item in noChildren" :key="item.menuName"
+                    @click="saveNavState('/' + item.url)">
                     <!-- 使用item.icon类为菜单项设置图标 -->
                     <i :class="item.icon"></i>
                     <!-- 设置菜单项的标题 -->
@@ -29,7 +30,8 @@
                         <i :class="item.icon"></i> <!-- 设置菜单项图标 -->
                         <span>{{ item.menuName }}</span> <!-- 显示菜单项名称 -->
                     </template>
-                    <el-menu-item :index="'/' + subItem.url" v-for="subItem in item.menuSvoList" :key="subItem.id">
+                    <el-menu-item :index="'/' + subItem.url" v-for="subItem in item.menuSvoList" :key="subItem.id"
+                        @click="saveNavState('/' + subItem.url)">
                         <!-- 渲染菜单项 -->
                         <template slot="title">
                             <i :class="subItem.icon"></i> <!-- 设置子菜单项图标 -->
@@ -56,7 +58,8 @@ export default {
     name: "Home",
     data() {
         return {
-            leftMenuList: storage.getItem("leftMenuList")
+            leftMenuList: storage.getItem("leftMenuList"),
+            activePath: '',
         };
     },
     computed: {
@@ -70,7 +73,12 @@ export default {
         }
     },
     created() { },
-    methods: {},
+    methods: {
+        saveNavState(activePath) {
+            storage.setItem('activePath', activePath)
+            this.activePath = activePath
+        },
+    },
     components: { router }
 };
 </script>
