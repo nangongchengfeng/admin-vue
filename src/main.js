@@ -9,6 +9,7 @@ import storage from '@/utils/storage'
 import store from '@/store'
 
 import '@/assets/css/global.css'
+
 Vue.prototype.$storage = storage
 Vue.prototype.$request = request
 Vue.prototype.$store = store
