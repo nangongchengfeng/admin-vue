@@ -1,26 +1,30 @@
 <template>
     <div class="login_container">
         <div class="login_box">
-            <el-form class="login_form">
+            <el-form class="login_form" ref="loginFormRef" :rules="rules" :model="loginForm">
                 <div class="title">通用后台管理系统</div>
                 <el-form-item prop="username">
-                    <el-input v-model="username" placeholder="请输入用户名" prefix-icon="el-icon-user-solid"></el-input>
+                    <el-input v-model="loginForm.username" placeholder="请输入用户名" prefix-icon="el-icon-user-solid"
+                        clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input v-model="password" placeholder="请输入密码" prefix-icon="el-icon-key"></el-input>
+                    <el-input v-model="loginForm.password" placeholder="请输入密码" prefix-icon="el-icon-key"
+                        clearable></el-input>
                 </el-form-item>
-                <el-form-item prop="验证码">
-                    <el-input placeholder="验证码" prefix-icon="el-icon-loading" style="width: 200px;float: left;"
-                        maxlength="4" />
+                <el-form-item prop="image">
+                    <el-input placeholder="验证码" prefix-icon="el-icon-view" style="width: 200px;float: left;" maxlength="4"
+                        v-model="loginForm.image" clearable />
                     <el-image class="captchaImg" style="width: 150px; float: left;" :src="image" @click="getCaptcha" />
                 </el-form-item>
                 <el-form-item>
                     <el-row :gutter="20">
                         <el-col :span="12" :offset="0">
-                            <el-button type="primary" style="width: 100%; font-size: large;">登录</el-button>
+                            <el-button type="primary" style="width: 100%; font-size: large;"
+                                @click="loginBtn">登录</el-button>
                         </el-col>
                         <el-col :span="12" :offset="0">
-                            <el-button type="info" style="width: 100%; font-size: large;">重置</el-button>
+                            <el-button type="info" style="width: 100%; font-size: large;"
+                                @click="resetLoginFrom">重置</el-button>
                         </el-col>
                     </el-row>
 
@@ -34,7 +38,28 @@ export default {
     name: "Login", // 定义组件名称为"Login"
     data() {
         return {
-            image: "" // 用于存储验证码图片的URL
+            image: "", // 用于存储验证码图片的URL
+            rules: {
+
+                username: [{
+                    required: true, message: "请输入账号", trigger: "blur"
+                }],
+                password: [{
+                    required: true, message: "请输密码", trigger: "blur"
+                }],
+                image: [
+                    {
+                        required: true, message: "请输入验证码", trigger: "blur"
+                    }
+                ]
+            },
+            loginForm: {
+                username: "",
+                password: "",
+                image: "",
+                idKey: ""
+
+            }
         }
     },
     methods: {
@@ -53,8 +78,32 @@ export default {
             } else {
                 // 验证码获取成功时，更新image属性
                 this.image = res.data.image
+                this.loginForm.idKey = res.data.idKey
             }
+        },
+        // 登录接口
+        loginBtn() {
+            this.$refs.loginFormRef.validate(async valid => {
+                if (valid) {
+                    const { data: res } = await this.$api.login(this.loginForm)
+                    console.log("获取res数据：", res)
+                    if (res.code !== 200) {
+                        this.$message.error(res.msg)
+                    } else {
+                        // 跳转到后台主页
+                        this.$router.push("/home")
+                        // 提示登录成功
+                        this.$message.success("登录成功")
+                    }
+                } else {
+                    return false
+                }
+            })
+        },
+        resetLoginFrom() {
+            this.$refs.loginFormRef.resetFields()
         }
+
 
     },
     created() {
