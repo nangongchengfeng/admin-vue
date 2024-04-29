@@ -6,7 +6,38 @@
                 <h3 class="logo-title">
                     <p>通用后台管理系统</p>
                 </h3>
+
             </div>
+            <el-menu background-color="#304156" text-color="#fff">
+                <!--
+                循环遍历noChildren数组中的每个项目，生成无子集菜单的<el-menu-item>元素。
+                :index 通过拼接'/'和item.url为每个菜单项设置唯一标识。
+                :key    使用item.menuName作为Vue中v-for循环的唯一键值。
+                -->
+                <el-menu-item :index="'/' + item.url" v-for="item in noChildren" :key="item.menuName">
+                    <!-- 使用item.icon类为菜单项设置图标 -->
+                    <i :class="item.icon"></i>
+                    <!-- 设置菜单项的标题 -->
+                    <template slot="title">
+                        <span>{{ item.menuName }}</span>
+                    </template>
+                </el-menu-item>
+                <!--有子集菜单-->
+                <el-submenu :index="item.id + ''" v-for="item in hasChildren" :key="item.id">
+                    <!-- 渲染子菜单项 -->
+                    <template slot="title">
+                        <i :class="item.icon"></i> <!-- 设置菜单项图标 -->
+                        <span>{{ item.menuName }}</span> <!-- 显示菜单项名称 -->
+                    </template>
+                    <el-menu-item :index="'/' + subItem.url" v-for="subItem in item.menuSvoList" :key="subItem.id">
+                        <!-- 渲染菜单项 -->
+                        <template slot="title">
+                            <i :class="subItem.icon"></i> <!-- 设置子菜单项图标 -->
+                            <span>{{ subItem.menuName }}</span> <!-- 显示子菜单项名称 -->
+                        </template>
+                    </el-menu-item>
+                </el-submenu>
+            </el-menu>
         </el-aside>
         <el-container>
             <el-header>header</el-header>
@@ -16,10 +47,23 @@
     </el-container>
 </template>
 <script>
+import storage from '@/utils/storage';
 export default {
     name: "Home",
     data() {
-        return {};
+        return {
+            leftMenuList: storage.getItem("leftMenuList")
+        };
+    },
+    computed: {
+        // 无子集
+        noChildren() {
+            return this.leftMenuList.filter(item => !item.menuSvoList)
+        },
+        // 有子集
+        hasChildren() {
+            return this.leftMenuList.filter(item => item.menuSvoList)
+        }
     },
     created() { },
     methods: {}
@@ -30,7 +74,7 @@ export default {
     height: 100%;
 
     .el-aside {
-        background-color: #d3dce6;
+        background-color: #304156;
 
         .logo {
             margin-top: 5px;
@@ -38,11 +82,11 @@ export default {
             align-items: center;
             font-size: 14px;
             /* 稍微增大字体大小 */
-            color: #333;
+            color: #f3f3f3;
             /* 更柔和的颜色 */
             font-style: italic;
             height: 50px;
-            font-family: "楷体", "楷体_GB2312";
+            // font-family: 'KaiTi', 'STKaiti', serif;
             /* 更换为无衬线字体 */
             font-weight: 300;
             /* 轻字体权重 */
@@ -58,14 +102,18 @@ export default {
             }
 
         }
+
+        .el-menu {
+            border-right: none;
+        }
     }
 
     .el-header {
-        background-color: #435466;
+        background-color: f7fafd;
     }
 
     .el-main {
-        background-color: #204b75;
+        background-color: #f7fafd;
     }
 
 }
