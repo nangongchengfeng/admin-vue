@@ -58,16 +58,20 @@
                     </el-breadcrumb>
                 </div>
                 <HeadImage />
+
             </el-header>
+            <Tags />
             <el-main><router-view /></el-main>
         </el-container>
 
     </el-container>
 </template>
 <script>
-import router from '@/router/router';
 import storage from '@/utils/storage';
 import HeadImage from "@/components/HeadImage"
+import Tags from "@/components/Tags.vue"
+
+
 export default {
     name: "Home",
     data() {
@@ -105,7 +109,7 @@ export default {
             }
         }
     },
-    components: { HeadImage },
+    components: { HeadImage, Tags },
 };
 </script>
 <style lang="less" scoped>
