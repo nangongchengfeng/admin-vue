@@ -1,11 +1,13 @@
 <template>
     <div class="tags">
-        <el-tag class="tag" size="medium" closable :effect="item.title == $route.meta.tTitle ? 'dark' : 'plain'"
-            v-for="item in tags" :key="item.path" @click="goTo(item.path)" @close="close(index)">
-            <i class=" circular" v-show="item.title == $route.meta.tTitle"></i>
+        <el-tag class="tag" size="medium" :effect="item.title == $route.meta.tTitle ? 'dark' : 'plain'"
+            v-for="item, index in tags" :key="item.path" @click="goTo(item.path)" @close="close(index)"
+            :disable-transitions="true" :closable="index > 0">
+            <i class="circular" v-show="item.title == $route.meta.tTitle"></i>
             {{ item.title }}</el-tag>
     </div>
 </template>
+
 
 <script>
 export default {
@@ -46,13 +48,25 @@ export default {
         goTo(path) {
             this.$router.push(path)
         },
-        // 点击关闭
+        /**
+         * 关闭指定索引的标签页。
+         * 
+         * @param {number} i 标签页的索引。
+         * 
+         * 逻辑说明：
+         * 如果要关闭的标签页是当前活动页，并且不是最后一个标签页，则导航到最后一个标签页。
+         * 如果要关闭的标签页是当前活动页，并且是最后一个标签页，则导航到倒数第二个标签页。
+         * 最后，从标签列表中移除该标签页。
+         */
         close(i) {
+            // 判断要关闭的标签是否为当前活动页，并处理特殊情况
             if (this.tags[i].path == this.$route.meta.path && i !== this.tags.length - 1) {
                 this.$router.push(this.tags[this.tags.length - 1].path)
             } else if (i === this.tags.length - 1) {
+                // 如果关闭的是最后一个标签，则导航到倒数第二个标签
                 this.$router.push(this.tags[this.tags.length - 2].path)
             }
+            // 从标签列表中移除指定的标签
             this.tags.splice(i, 1)
         }
     }
