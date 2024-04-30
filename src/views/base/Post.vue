@@ -48,7 +48,7 @@
                 <el-table-column label="岗位编码" prop="postCode" />
                 <el-table-column label="岗位状态" prop="postStatus">
                     <template slot-scope="scope">
-                        <el-switch v-model="scope.row.postStatus" :active-value="1" :inactivevalue="2"
+                        <el-switch v-model="scope.row.postStatus" :active-value="1" :inactive-value="2"
                             active-color="#13ce66" inactive-color="#F5222D" active-text="启用" inactive-text="停用"
                             @change="postUpdateStatus(scope.row)">
                         </el-switch>
@@ -62,7 +62,7 @@
                         <el-button size="small" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row.id)">
                             编辑
                         </el-button>
-                        <el-button size="small" type="text" icon="el-icon-delete">
+                        <el-button size="small" type="text" icon="el-icon-delete" @click="handLeDelete(scope.row.id)">
                             删除
                         </el-button>
                     </template>
@@ -112,8 +112,8 @@
                 </el-form-item>
                 <el-form-item label="岗位状态" prop="postStatus">
                     <el-radio-group v-model="editPostForm.postStatus">
-                        <el-radio :label="1">启用</el-radio>
-                        <el-radio :label="2">禁用</el-radio>
+                        <el-radio :label="1">正常</el-radio>
+                        <el-radio :label="2">停用</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="岗位描述" prop="remark">
@@ -202,7 +202,9 @@ export default {
             this.getPostList()
         },
         // 修改岗位状态
+        // 修改岗位状态
         async postUpdateStatus(row) {
+            console.log(row, row.postStatus);
             let text = row.postStatus === 2 ? "停用" : "启用";
             const confirmResult = await this.$confirm('确认要"' + text + '""' +
                 row.postName + '"岗位吗?', "警告", {
@@ -270,6 +272,26 @@ export default {
                 }
             })
         },
+        // 删除岗位
+        async handLeDelete(id) {
+            const confirmResult = await this.$confirm('确定要删除岗位编号为"' + id + '"的数据项?', '提示',
+                {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).catch(err => err)
+            if (confirmResult !== 'confirm') {
+                return this.$message.info('取消删除')
+            } else {
+                const { data: res } = await this.$api.deleteSysPost(id)
+                if (res.code == 200) {
+                    this.$message.success(res.msg);
+                    await this.getPostList();
+                } else {
+                    this.$message.success(res.msg);
+                }
+            }
+        }
 
     },
     created() {
