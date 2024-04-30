@@ -7,7 +7,7 @@
                     <el-input placeholder="请输入岗位名称" clearable size="mini" v-model="queryParams.postName" />
                 </el-form-item>
                 <el-form-item label="岗位状态" prop="postStatus">
-                    <el-select size="mini" placeholder="请选择岗位状态" v-model="queryParams.postStaus">
+                    <el-select size="mini" placeholder="请选择岗位状态" v-model="queryParams.postStatus">
                         <el-option v-for="item in postStatusList" :key="item.value" :label="item.label"
                             :value="item.value" />
                     </el-select>
@@ -35,13 +35,14 @@
 
                 </el-col>
                 <el-col :span="1.5">
-                    <el-button plain type="danger" icon="el-icon-delete" size="mini">删除
+                    <el-button plain type="danger" icon="el-icon-delete" size="mini" :disabled="multiple"
+                        @click="batchHandleDelete">删除
                     </el-button>
                 </el-col>
             </el-row>
             <!--列表-->
             <el-table border stripe style="width: 100%;" :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
-                v-loading="loading" :data="postList">
+                v-loading="loading" :data="postList" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" />
                 <el-table-column label="ID" v-if="false" prop="id" />
                 <el-table-column label="岗位名称" prop="postName" />
@@ -50,7 +51,7 @@
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.postStatus" :active-value="1" :inactive-value="2"
                             active-color="#13ce66" inactive-color="#F5222D" active-text="启用" inactive-text="停用"
-                            @change="postUpdateStatus(scope.row)">
+                            @change="postUpdateStatus(scope.row)" :disabled="false"> <!-- 禁用开关 -->
                         </el-switch>
                     </template>
                 </el-table-column>
@@ -163,6 +164,9 @@ export default {
                 postCode: [{ required: true, message: '请输入岗位标识', trigger: 'blur' }],
                 postStatus: [{ required: true, message: '请输入岗位状态', trigger: 'blur' }]
             },
+            ids: [],
+            single: true,
+            multiple: true,
 
         }
     },
@@ -170,8 +174,8 @@ export default {
         // 获取列表
         async getPostList() {
             this.loading = true;
+            console.log(this.queryParams)
             const { data: res } = await this.$api.queryPostList(this.queryParams);
-            console.log(res);
             if (res.code !== 200) {
                 this.$message.error(res.msg);
             } else {
@@ -204,7 +208,6 @@ export default {
         // 修改岗位状态
         // 修改岗位状态
         async postUpdateStatus(row) {
-            console.log(row, row.postStatus);
             let text = row.postStatus === 2 ? "停用" : "启用";
             const confirmResult = await this.$confirm('确认要"' + text + '""' +
                 row.postName + '"岗位吗?', "警告", {
@@ -291,7 +294,34 @@ export default {
                     this.$message.success(res.msg);
                 }
             }
-        }
+        },
+        // 批量删除岗位
+        async batchHandleDelete() {
+            const postIds = this.ids;
+            const confirmResult = await this.$confirm('确定要删除岗位编号为"' + postIds + '"的数据项?', '提示',
+                {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).catch(err => err)
+            if (confirmResult !== 'confirm') {
+                return this.$message.info('取消删除')
+            } else {
+                const { data: res } = await this.$api.batchDeleteSysPost(postIds)
+                if (res.code == 200) {
+                    this.$message.success(res.msg);
+                    await this.getPostList();
+                } else {
+                    this.$message.success(res.msg);
+                }
+            }
+        },
+        // 多选框选中数据
+        handleSelectionChange(selection) {
+            this.ids = selection.map(item => item.id);
+            this.single = selection.length != 1;
+            this.multiple = !selection.length;
+        },
 
     },
     created() {
