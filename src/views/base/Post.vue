@@ -1,79 +1,107 @@
 <template>
-    <!-- 条件搜索 -->
-    <el-card>
-        <el-form :model="queryParams" :inline="true">
-            <el-form-item label="岗位名称" prop="postName">
-                <el-input placeholder="请输入岗位名称" clearable size="mini" v-model="queryParams.postName" />
-            </el-form-item>
-            <el-form-item label="岗位状态" prop="postStatus">
-                <el-select size="mini" placeholder="请选择岗位状态" v-model="queryParams.postStaus">
-                    <el-option v-for="item in postStatusList" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-            </el-form-item>
-            <el-form-item label="开始时间" prop="beginTime">
-                <el-date-picker class="input-width" size="mini" type="date" style="width: 190px;" value-format="yyyy-MM-dd"
-                    placeholder="请选择开始时间" v-model="queryParams.beginTime" />
-            </el-form-item>
-            <el-form-item label="结束时间" prop="endTime">
-                <el-date-picker class="input-width" size="mini" type="date" style="width: 190px;" value-format="yyyy-MM-dd"
-                    placeholder="请选择结束时间" v-model="queryParams.endTime" />
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索
-                </el-button>
-                <el-button type="primary" icon="el-icon-refresh" size="mini" @click="resetQuery">重置
-                </el-button>
-            </el-form-item>
-        </el-form>
-        <!-- 操作按钮 -->
-        <el-row :gutter="10" class="mb8">
-            <el-col :span="1.5">
-                <el-button plain type="primary" icon="el-icon-plus" size="mini">新增</el-button>
-
-            </el-col>
-            <el-col :span="1.5">
-                <el-button plain type="danger" icon="el-icon-delete" size="mini">删除
-                </el-button>
-            </el-col>
-        </el-row>
-        <!--列表-->
-        <el-table border stripe style="width: 100%;" :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
-            v-loading="loading" :data="postList">
-            <el-table-column type="selection" />
-            <el-table-column label="ID" v-if="false" prop="id" />
-            <el-table-column label="岗位名称" prop="postName" />
-            <el-table-column label="岗位编码" prop="postCode" />
-            <el-table-column label="岗位状态" prop="postStatus">
-                <template slot-scope="scope">
-                    <el-switch v-model="scope.row.postStatus" :active-value="1" :inactivevalue="2" active-color="#13ce66"
-                        inactive-color="#F5222D" active-text="启用" inactive-text="停用" @change="postUpdateStatus(scope.row)">
-                    </el-switch>
-                </template>
-            </el-table-column>
-            <el-table-column label="创建时间" prop="createTime" />
-
-            <el-table-column label="描述" prop="remark" />
-            <el-table-column label="更多操作">
-                <template slot-scope="scope">
-                    <el-button size="small" type="text" icon="el-icon-edit">
-                        编辑
+    <div>
+        <!-- 条件搜索 -->
+        <el-card>
+            <el-form :model="queryParams" :inline="true">
+                <el-form-item label="岗位名称" prop="postName">
+                    <el-input placeholder="请输入岗位名称" clearable size="mini" v-model="queryParams.postName" />
+                </el-form-item>
+                <el-form-item label="岗位状态" prop="postStatus">
+                    <el-select size="mini" placeholder="请选择岗位状态" v-model="queryParams.postStaus">
+                        <el-option v-for="item in postStatusList" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="开始时间" prop="beginTime">
+                    <el-date-picker class="input-width" size="mini" type="date" style="width: 190px;"
+                        value-format="yyyy-MM-dd" placeholder="请选择开始时间" v-model="queryParams.beginTime" />
+                </el-form-item>
+                <el-form-item label="结束时间" prop="endTime">
+                    <el-date-picker class="input-width" size="mini" type="date" style="width: 190px;"
+                        value-format="yyyy-MM-dd" placeholder="请选择结束时间" v-model="queryParams.endTime" />
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索
                     </el-button>
-                    <el-button size="small" type="text" icon="el-icon-delete">
-                        删除
+                    <el-button type="primary" icon="el-icon-refresh" size="mini" @click="resetQuery">重置
                     </el-button>
-                </template>
-            </el-table-column>
+                </el-form-item>
+            </el-form>
+            <!-- 操作按钮 -->
+            <el-row :gutter="10" class="mb8">
+                <el-col :span="1.5">
+                    <el-button plain type="primary" icon="el-icon-plus" size="mini"
+                        @click="addPostDialogVisible = true">新增</el-button>
+
+                </el-col>
+                <el-col :span="1.5">
+                    <el-button plain type="danger" icon="el-icon-delete" size="mini">删除
+                    </el-button>
+                </el-col>
+            </el-row>
+            <!--列表-->
+            <el-table border stripe style="width: 100%;" :header-cell-style="{ background: '#eef1f6', color: '#606266' }"
+                v-loading="loading" :data="postList">
+                <el-table-column type="selection" />
+                <el-table-column label="ID" v-if="false" prop="id" />
+                <el-table-column label="岗位名称" prop="postName" />
+                <el-table-column label="岗位编码" prop="postCode" />
+                <el-table-column label="岗位状态" prop="postStatus">
+                    <template slot-scope="scope">
+                        <el-switch v-model="scope.row.postStatus" :active-value="1" :inactivevalue="2"
+                            active-color="#13ce66" inactive-color="#F5222D" active-text="启用" inactive-text="停用"
+                            @change="postUpdateStatus(scope.row)">
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column label="创建时间" prop="createTime" />
+
+                <el-table-column label="描述" prop="remark" />
+                <el-table-column label="更多操作">
+                    <template slot-scope="scope">
+                        <el-button size="small" type="text" icon="el-icon-edit">
+                            编辑
+                        </el-button>
+                        <el-button size="small" type="text" icon="el-icon-delete">
+                            删除
+                        </el-button>
+                    </template>
+                </el-table-column>
+                <!-- 分页 -->
+
+            </el-table>
             <!-- 分页 -->
-
-        </el-table>
-        <!-- 分页 -->
-        <el-pagination @size-change="handleSizeChange" @currentchange="handleCurrentChange"
-            :current-page="queryParams.pageNum" :page-sizes="[10, 50, 100, 500, 1000]" :page-size="queryParams.pageSize"
-            layout="total, sizes, prev, pager, next, jumper" :total="total">
-        </el-pagination>
-    </el-card>
+            <el-pagination @size-change="handleSizeChange" @currentchange="handleCurrentChange"
+                :current-page="queryParams.pageNum" :page-sizes="[10, 50, 100, 500, 1000]" :page-size="queryParams.pageSize"
+                layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+        </el-card>
+        <!-- 新增对话框 -->
+        <el-dialog title="新增岗位" :visible.sync="addPostDialogVisible" width="30%" @close="addPostDialogClosed">
+            <el-form label-width="80px" ref="addPostFormRefForm" :rules="addPostFormRules" :model="addPostForm">
+                <el-form-item label="岗位名称" prop="postName">
+                    <el-input placeholder="请输入岗位名称" v-model="addPostForm.postName"></el-input>
+                </el-form-item>
+                <el-form-item label="岗位编码" prop="postCode">
+                    <el-input placeholder="请输入岗位编码" v-model="addPostForm.postCode"></el-input>
+                </el-form-item>
+                <el-form-item label="岗位状态" prop="postStatus">
+                    <el-radio-group v-model="addPostForm.postStatus">
+                        <el-radio :label="1">启用</el-radio>
+                        <el-radio :label="2">禁用</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="岗位描述" prop="remark">
+                    <el-input placeholder="请输入岗位描述" v-model="addPostForm.remark"></el-input>
+                </el-form-item>
+            </el-form>
+            <span>
+                <el-button type="primary" @click="addPost">确认</el-button>
+                <el-button type="primary" @click="addPostDialogVisible = false">取消</el-button>
+            </span>
+        </el-dialog>
+    </div>
 </template>
-
 <script>
 export default {
     name: 'Post',
@@ -90,6 +118,18 @@ export default {
             loading: true,
             postList: [],
             totaal: 0,
+            addPostDialogVisible: false,
+            addPostFormRules: {
+                postName: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }],
+                postCode: [{ required: true, message: '请输入岗位标识', trigger: 'blur' }],
+                postStatus: [{ required: true, message: '请输入岗位状态', trigger: 'blur' }]
+            },
+            addPostForm: {
+                postName: '',
+                postCode: '',
+                postStatus: 1,
+                remark: ''
+            }
 
         }
     },
@@ -144,6 +184,32 @@ export default {
             await this.$api.updatePostStatus(row.id, row.postStatus)
             return this.$message.success(text + "成功")
             await this.getPostList()
+        },
+        // 监听新增岗位对话关闭
+        addPostDialogClosed() {
+            this.$refs.addPostFormRefForm.resetFields()
+        },
+        //   新增岗位
+        /**
+         * 提交新增岗位的表单
+         * 此函数无参数和返回值，但会调用表单验证和后端API进行新增操作，并根据操作结果给出提示。
+         */
+        addPost() {
+            // 验证表单填写是否符合规则
+            this.$refs.addPostFormRefForm.validate(async valid => {
+                if (!valid) return // 如果表单验证不通过，则直接返回，不执行后续操作
+                // 调用后端API添加岗位信息
+                const { data: res } = await this.$api.addPost(this.addPostForm);
+                // 根据后端返回的代码判断操作结果并给出相应提示
+                if (res.code !== 200) {
+                    this.$message.error(res.msg) // 若操作失败，显示错误信息
+                } else {
+                    this.$message.success("新增岗位成功") // 若操作成功，显示成功信息
+                    this.addPostDialogVisible = false // 关闭新增岗位的对话框
+                    await this.getPostList() // 重新获取岗位列表
+                }
+            })
+
         }
 
     },
