@@ -7,7 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import request from '@/utils/request'
 import storage from '@/utils/storage'
 import store from '@/store'
-
+import handleTree from "@/utils/common"
 import '@/assets/css/global.css'
 import api from "./api"
 
@@ -15,6 +15,7 @@ Vue.prototype.$storage = storage
 Vue.prototype.$request = request
 Vue.prototype.$store = store
 Vue.prototype.$api = api
+Vue.prototype.$handleTree = handleTree
 Vue.use(ElementUI)
 
 
