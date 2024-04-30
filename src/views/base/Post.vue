@@ -43,8 +43,15 @@
             <el-table-column label="ID" v-if="false" prop="id" />
             <el-table-column label="岗位名称" prop="postName" />
             <el-table-column label="岗位编码" prop="postCode" />
-            <el-table-column label="岗位状态" prop="postStatus" />
+            <el-table-column label="岗位状态" prop="postStatus">
+                <template slot-scope="scope">
+                    <el-switch v-model="scope.row.postStatus" :active-value="1" :inactivevalue="2" active-color="#13ce66"
+                        inactive-color="#F5222D" active-text="启用" inactive-text="停用" @change="postUpdateStatus(scope.row)">
+                    </el-switch>
+                </template>
+            </el-table-column>
             <el-table-column label="创建时间" prop="createTime" />
+
             <el-table-column label="描述" prop="remark" />
             <el-table-column label="更多操作">
                 <template slot-scope="scope">
@@ -121,6 +128,23 @@ export default {
             this.queryParams.pageNum = newPage
             this.getPostList()
         },
+        // 修改岗位状态
+        async postUpdateStatus(row) {
+            let text = row.postStatus === 2 ? "停用" : "启用";
+            const confirmResult = await this.$confirm('确认要"' + text + '""' +
+                row.postName + '"岗位吗?', "警告", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+            }).catch(err => err)
+            if (confirmResult !== 'confirm') {
+                await this.getPostList()
+                return this.$message.info('已取消修改')
+            }
+            await this.$api.updatePostStatus(row.id, row.postStatus)
+            return this.$message.success(text + "成功")
+            await this.getPostList()
+        }
 
     },
     created() {
