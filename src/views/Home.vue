@@ -57,6 +57,7 @@
                         <el-breadcrumb-item :to="{ path: '/welcome' }">首页</el-breadcrumb-item>
                     </el-breadcrumb>
                 </div>
+                <HeadImage />
             </el-header>
             <el-main><router-view /></el-main>
         </el-container>
@@ -66,6 +67,7 @@
 <script>
 import router from '@/router/router';
 import storage from '@/utils/storage';
+import HeadImage from "@/components/HeadImage"
 export default {
     name: "Home",
     data() {
@@ -103,7 +105,7 @@ export default {
             }
         }
     },
-    components: { router }
+    components: { HeadImage },
 };
 </script>
 <style lang="less" scoped>
