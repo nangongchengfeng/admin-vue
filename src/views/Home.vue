@@ -1,14 +1,15 @@
 <template>
     <el-container class="home-container">
-        <el-aside width="200px">
+        <el-aside :width="isCollapse ? '64px' : '200px'">
             <div class="logo">
                 <img src="../assets/image/logo.jpg" class="sidebar-logo">
-                <h3 class="logo-title">
+                <h3 class="logo-title" v-show="!isCollapse">
                     <p>通用后台管理系统</p>
                 </h3>
 
             </div>
-            <el-menu background-color="#304156" text-color="#fff" unique-opened router :default-active="$route.path">
+            <el-menu background-color="#304156" text-color="#fff" unique-opened router :default-active="$route.path"
+                :collapse="isCollapse" :collapse-transition="false">
                 <!--
                 循环遍历noChildren数组中的每个项目，生成无子集菜单的<el-menu-item>元素。
                 :index 通过拼接'/'和item.url为每个菜单项设置唯一标识。
@@ -44,7 +45,7 @@
         <el-container>
             <el-header>
                 <div class="fold-btn">
-                    <i :class="collapseBtnClass"></i>
+                    <i :class="collapseBtnClass" @click="toggleCollapse"></i>
                 </div>
             </el-header>
             <el-main><router-view /></el-main>
@@ -62,6 +63,7 @@ export default {
             leftMenuList: storage.getItem("leftMenuList"),
             activePath: '',
             collapseBtnClass: "el-icon-s-fold",
+            isCollapse: false,
         };
     },
     computed: {
@@ -76,10 +78,20 @@ export default {
     },
     created() { },
     methods: {
+        // 点击路由跳转保持
         saveNavState(activePath) {
             storage.setItem('activePath', activePath)
             this.activePath = activePath
         },
+        // 展开和折叠
+        toggleCollapse() {
+            this.isCollapse = !this.isCollapse
+            if (this.isCollapse) {
+                this.collapseBtnClass = 'el-icon-s-unfold'
+            } else {
+                this.collapseBtnClass = 'el-icon-s-fold'
+            }
+        }
     },
     components: { router }
 };
