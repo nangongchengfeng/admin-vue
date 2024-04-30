@@ -47,6 +47,16 @@
                 <div class="fold-btn">
                     <i :class="collapseBtnClass" @click="toggleCollapse"></i>
                 </div>
+                <div class="bread-btn">
+                    <el-breadcrumb separator="/" v-if="$router.currentRoute.path != '/welcome'">
+                        <el-breadcrumb-item :to="{ path: '/welcome' }">首页</el-breadcrumb-item>
+                        <el-breadcrumb-item>{{ $route.meta.sTitle }}</el-breadcrumb-item>
+                        <el-breadcrumb-item>{{ $route.meta.tTitle }}</el-breadcrumb-item>
+                    </el-breadcrumb>
+                    <el-breadcrumb separator="/" v-else>
+                        <el-breadcrumb-item :to="{ path: '/welcome' }">首页</el-breadcrumb-item>
+                    </el-breadcrumb>
+                </div>
             </el-header>
             <el-main><router-view /></el-main>
         </el-container>
@@ -147,6 +157,12 @@ export default {
             padding-top: 2px;
             font-size: 23px;
             cursor: pointer;
+        }
+
+        .bread-btn {
+            padding-top: 2px;
+            position: fixed;
+            margin-left: 40px;
         }
     }
 
