@@ -24,12 +24,11 @@
             <el-row :gutter="10" class="mb8">
                 <el-col :span="1.5">
                     <el-button plain type="primary" icon="el-icon-plus" size="mini"
-                        @click="addPostDialogVisible = true">新增</el-button>
+                        @click="addDeptDialogVisible = true">新增</el-button>
 
                 </el-col>
                 <el-col :span="1.5">
-                    <el-button plain type="info" icon="el-icon-sort" size="mini" :disabled="multiple"
-                        @click="toggleExpandAll">展开/折叠
+                    <el-button plain type="info" icon="el-icon-sort" size="mini" @click="toggleExpandAll">展开/折叠
                     </el-button>
                 </el-col>
             </el-row>
@@ -63,13 +62,45 @@
                     </template>
                 </el-table-column>
             </el-table>
+
+            <!-- 新增部门 -->
+            <el-dialog title="新增部门" :visible.sync="addDeptDialogVisible" width="30%" @close="addDeptDialogClose">
+                <el-form label-width="80px" :model="addDeptForm" :rules="addDeptFormRules" ref="addDeptFormRefForm">
+                    <el-form-item label="部门类型" prop="deptType">
+                        <el-radio-group v-model="addDeptForm.deptType">
+                            <el-radio :label="1">公司</el-radio>
+                            <el-radio :label="2">中心</el-radio>
+                            <el-radio :label="3">部门</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item size="mini" label="上级部门" prop="parentId" v-if="addDeptForm.deptType != 1">
+                        <treeselect placeholder="请选择上级部门" :options="optionsDeptList" v-model="addDeptForm.parentId" />
+                    </el-form-item>
+                    <el-form-item label="部门名称" prop="deptName">
+                        <el-input v-model="addDeptForm.deptName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="部门状态" prop="deptStatus">
+                        <el-radio-group v-model="addDeptForm.deptStatus">
+                            <el-radio :label="1">正常</el-radio>
+                            <el-radio :label="2">停用</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="addDept">确定</el-button>
+                    <el-button type="primary" @click="addDeptDialogVisible = false">取消</el-button>
+                </span>
+            </el-dialog>
         </el-card>
     </div>
 </template>
 
 <script>
+import Treeselect from "@riophae/vue-treeselect"
+import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 export default {
     name: 'Dept',
+    components: { Treeselect },
     data() {
 
         return {
@@ -82,6 +113,15 @@ export default {
             refreshTable: true,
             isExpandAll: true,
             deptList: [],
+            addDeptDialogVisible: false,
+            optionsDeptList: [],
+            addDeptFormRules: {
+                deptType: [{ required: true, message: "请选择部门类型", trigger: "blur" }],
+                deptName: [{ required: true, message: '请输入部门名称', trigger: 'blur' }],
+            },
+            addDeptForm: {
+                deptStatus: 1
+            }
         }
     }, methods: {
         // 查询部门列表
@@ -115,10 +155,41 @@ export default {
             this.$nextTick(() => {
                 this.refreshTable = true
             })
-        }
+        },
+        // 部门下拉列表
+        async getDeptVoList() {
+            const { data: res } = await this.$api.querySysDeptVoList()
+            console.log(res)
+            if (res.code !== 200) {
+                this.$message.error(res.msg)
+            } else {
+                this.optionsDeptList = this.$handleTree.handleTree(res.data, "id")
+            }
+        },
+        // 添加部门
+        addDept() {
+            this.$refs.addDeptFormRefForm.validate(async valid => {
+                if (!valid) return
+                const { data: res } = await this.$api.addDept(this.addDeptForm);
+                if (res.code !== 200) {
+                    this.$message.error(res.message)
+                } else {
+                    this.$message.success('新增部门成功')
+                    this.addDeptDialogVisible = false
+                    await this.getList()
+                    await this.getDeptVoList()
+                }
+                this.getDeptList()
+            })
+        },
+        // 监听新增部门对话框
+        addDeptDialogClose() {
+            this.$refs.addDeptFormRefForm.resetFields()
+        },
     },
     created() {
         this.getDeptList()
+        this.getDeptVoList()
     }
 
 }
