@@ -59,7 +59,7 @@
                 <el-table-column label="描述" prop="remark" />
                 <el-table-column label="更多操作">
                     <template slot-scope="scope">
-                        <el-button size="small" type="text" icon="el-icon-edit">
+                        <el-button size="small" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row.id)">
                             编辑
                         </el-button>
                         <el-button size="small" type="text" icon="el-icon-delete">
@@ -100,6 +100,31 @@
                 <el-button type="primary" @click="addPostDialogVisible = false">取消</el-button>
             </span>
         </el-dialog>
+
+        <!-- 编辑对话框 -->
+        <el-dialog title="编辑岗位" :visible.sync="editPostDialogVisible" width="30%" @close="editPostDialogClosed">
+            <el-form label-width="80px" ref="editPostFormRefForm" :rules="editPostFormRules" :model="editPostForm">
+                <el-form-item label="岗位名称" prop="postName">
+                    <el-input placeholder="请输入岗位名称" v-model="editPostForm.postName"></el-input>
+                </el-form-item>
+                <el-form-item label="岗位编码" prop="postCode">
+                    <el-input placeholder="请输入岗位编码" v-model="editPostForm.postCode"></el-input>
+                </el-form-item>
+                <el-form-item label="岗位状态" prop="postStatus">
+                    <el-radio-group v-model="editPostForm.postStatus">
+                        <el-radio :label="1">启用</el-radio>
+                        <el-radio :label="2">禁用</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="岗位描述" prop="remark">
+                    <el-input placeholder="请输入岗位描述" v-model="editPostForm.remark"></el-input>
+                </el-form-item>
+            </el-form>
+            <span>
+                <el-button type="primary" @click="editPost">修改</el-button>
+                <el-button type="primary" @click="editPostDialogVisible = false">取消</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -129,7 +154,15 @@ export default {
                 postCode: '',
                 postStatus: 1,
                 remark: ''
-            }
+            },
+            editPostDialogVisible: false,
+            editPostForm: {
+            },
+            editPostFormRules: {
+                postName: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }],
+                postCode: [{ required: true, message: '请输入岗位标识', trigger: 'blur' }],
+                postStatus: [{ required: true, message: '请输入岗位状态', trigger: 'blur' }]
+            },
 
         }
     },
@@ -210,7 +243,33 @@ export default {
                 }
             })
 
-        }
+        },
+        // 监听编辑岗位对话关闭
+        editPostDialogClosed() {
+            // 重置表单字段
+            this.$refs.editPostFormRefForm.resetFields()
+        },
+        // 显示岗位对话框
+        async handleUpdate(id) {
+            const { data: res } = await this.$api.postInfo(id)
+            if (res.code !== 200) return this.$message.error(res.msg)
+            this.editPostForm = res.data
+            this.editPostDialogVisible = true
+        },
+        //修改岗位信息
+        async editPost() {
+            this.$refs.editPostFormRefForm.validate(async valid => {
+                if (!valid) return
+                const { data: res } = await this.$api.updatePost(this.editPostForm)
+                if (res.code !== 200) {
+                    this.$message.error(res.msg)
+                } else {
+                    this.editPostDialogVisible = false
+                    await this.getPostList()
+                    this.$message.success("修改岗位成功")
+                }
+            })
+        },
 
     },
     created() {
