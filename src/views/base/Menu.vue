@@ -63,7 +63,7 @@
             <el-table-column label="创建时间" prop="createTime" />
             <el-table-column label="更多操作" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                    <el-button size="mini" type="text" icon="el-icon-edit">修改
+                    <el-button size="mini" type="text" icon="el-icon-edit" @click="showEditMenuDialog(scope.row.id)">修改
                     </el-button>
                     <el-button size="mini" type="text" icon="el-icon-delete">删除
                     </el-button>
@@ -137,6 +137,72 @@
                 </el-button>
             </div>
         </el-dialog>
+
+        <!-- 修改页面 -->
+        <el-dialog title="修改菜单" :visible.sync="editMenuDialogVisible" width="30%" @close="editMenuDialogClosed">
+            <el-form :model="menuInfo" :rules="editMenuFormRules" ref="editMenuFormRefForm" label-width="80px">
+                <el-row>
+                    <el-col>
+                        <el-form-item label="菜单类型" prop="menuType">
+                            <el-radio-group v-model="menuInfo.menuType">
+                                <el-radio :label="1">目录</el-radio>
+                                <el-radio :label="2">菜单</el-radio>
+                                <el-radio :label="3">按钮</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item size="mini" label="上级菜单" prop="parentId" v-if="menuInfo.menuType != 1">
+                            <treeselect :options="treeList" placeholder="请选择上级菜单" v-model="menuInfo.parentId" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item label="菜单图标" prop="icon" v-if="menuInfo.menuType
+                            != 3">
+                            <el-select v-model="menuInfo.icon">
+                                <el-option v-for="item in iconList" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                    <i :class="item.value" style="font-size: 25px;" />
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item label="菜单名称" prop="menuName">
+                            <el-input v-model="menuInfo.menuName" placeholder="请输入菜单名称" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item label="显示排序" prop="sort">
+                            <el-input-number v-model="menuInfo.sort" controls-position="right" :min="0" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col v-if="menuInfo.menuType != 3">
+                        <el-form-item label="菜单url" prop="url">
+                            <el-input v-model="menuInfo.url" placeholder="请输入菜单url" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item v-if="menuInfo.menuType != 1" label="权限标识" prop="value">
+                            <el-input v-model="menuInfo.value" placeholder="请权限标识" maxlength="50" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item v-if="menuInfo.menuType != 3" label="显示状态" prop="menuStatus">
+                            <el-radio-group v-model="menuInfo.menuStatus">
+                                <el-radio :label="1">停用</el-radio>
+                                <el-radio :label="2">启用</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="editMenu">确 定</el-button>
+                <el-button type="primary" @click="editMenuDialogVisible = false">取 消
+                </el-button>
+            </div>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -166,8 +232,6 @@ export default {
 
             // 刷新表格
             refreshTable: true,
-            // 查询参数
-            queryParams: {},
             // 是否显示新增菜单对话框
             addMenuDialogVisible: false,
             // 表单数据
@@ -183,6 +247,13 @@ export default {
             treeList: [],
             // 是否显示编辑菜单对话框
             editMenuDialogVisible: false,
+            menuInfo: [],
+            editMenuFormRules: {
+                menuType: [{ required: true, message: "菜单类型不能为空", trigger: "blur" }],
+                menuName: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }],
+                sort: [{ required: true, message: "菜单顺序不能为空", trigger: "blur" }],
+                value: [{ required: true, message: "权限标识不能为空", trigger: "blur" }]
+            },
             // 是否显示新增子菜单对话框
             addSubMenuDialogVisible: false,
             // 是否显示编辑子菜单对话框
@@ -301,6 +372,7 @@ export default {
                 this.$message.error(res.msg)
             } else {
                 this.treeList = this.$handleTree.handleTree(res.data, "id")
+                console.log(this.treeList)
             }
         },
 
@@ -309,7 +381,6 @@ export default {
                 if (!valid) return
 
                 const { data: res } = await this.$api.addMenu(this.menuForm);
-                console.log(this.menuForm, res)
                 if (res.code !== 200) {
                     this.$message.error(res.msg)
                 } else {
@@ -320,9 +391,36 @@ export default {
                 }
             })
         },
+        editMenuDialogClosed() {
+            this.$refs.editMenuFormRefForm.resetFields()
+        },
+        async showEditMenuDialog(id) {
+            const { data: res } = await this.$api.menuInfo(id)
+            if (res.code !== 200) {
+                this.$message.error(res.message)
+            } else {
+                this.menuInfo = res.data
+                this.editMenuDialogVisible = true
+            }
+        },
+        editMenu() {
+            this.$refs.editMenuFormRefForm.validate(async valid => {
+                if (!valid) return
+                const { data: res } = await this.$api.menuUpdate(this.menuInfo)
+                if (res.code !== 200) {
+                    this.$message.error(res.message)
+                } else {
+                    this.editMenuDialogVisible = false
+                    await this.getMenuList()
+                    this.$message.success("修改菜单成功")
+                }
+            })
+        },
+
     },
     created() {
         this.getMenuList()
+        this.getMenuVoList()
     },
 };
 </script>
