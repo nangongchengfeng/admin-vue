@@ -186,5 +186,85 @@ export default {
             data: data
         })
     },
+    // role角色
+    queryRoleList(params) {
+        return request({
+            url: "/role/list",
+            method: 'get',
+            data: params
+        })
+    },
+    querySysRoleVoList() {
+        return request({
+            url: "/role/vo/list",
+            method: 'get'
+        })
+    },
+    addRole(data) {
+        return request({
+            url: '/role/add',
+            method: 'post',
+            data: data
+        })
+    },
+    roleInfo(id) {
+        const data = {
+            id
+        }
+        return request({
+            url: '/role/info',
+            method: 'get',
+            data: data
+        })
+    },
+    roleUpdate(data) {
+        return request({
+            url: '/role/update',
+            method: 'put',
+            data: data
+        })
+    },
+    deleteRole(id) {
+        const data = {
+            id
+        }
+        return request({
+            url: '/role/delete',
+            method: 'delete',
+            data: data
+        })
+    },
+    updateRoleStatus(id, status) {
+        const data = {
+            id,
+            status
+        }
+        return request({
+            url: "/role/updateStatus",
+            method: 'put',
+            data: data
+        })
+    },
+    QueryRoleMenuIdList(id) {
+        const data = {
+            id
+        }
+        return request({
+            url: "/role/vo/idList",
+            method: 'get',
+            data: data
+        })
+    },
+    AssignPermissions(id, menuIds) {
+        const data = {
+            id,
+            menuIds
+        }
+        return request({
+            url: "/role/assignPermissions",
+            method: 'put',
+            data: data
+        })
+    },
 
 }
