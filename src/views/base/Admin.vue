@@ -48,7 +48,8 @@
                 <el-table-column label="账号状态" width="150">
                     <template slot-scope="scope">
                         <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="2" active-color="#13ce66"
-                            inactive-color="#F5222D" active-text="启用" inactive-text="停用">
+                            inactive-color="#F5222D" active-text="启用" inactive-text="停用"
+                            @change="adminUpdateStatus(scope.row)">
                         </el-switch>
                     </template>
                 </el-table-column>
@@ -137,6 +138,23 @@ export default {
         handleCurrentChange(newPage) {
             this.queryParams.pageNum = newPage
             this.getAdminList()
+        },
+        // 修改管用户状态
+        async adminUpdateStatus(row) {
+            let text = row.status === 2 ? "停用" : "启用";
+            const confirmResult = await this.$confirm('确认要"' + text + '""' +
+                row.username + '"用户吗?', "警告", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+            }).catch(err => err)
+            if (confirmResult !== 'confirm') {
+                await this.getAdminList()
+                return this.$message.info('已取消删除')
+            }
+            await this.$api.updateAdminStatus(row.id, row.status)
+            this.$message.success(text + "成功")
+            await this.getAdminList()
         },
     },
     created() {
