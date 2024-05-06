@@ -43,7 +43,7 @@
             <el-table-column label="账号状态">
                 <template slot-scope="scope">
                     <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="2" active-color="#13ce66"
-                        inactive-color="#F5222D" active-text="启用" inactive-text="停用">
+                        inactive-color="#F5222D" active-text="启用" inactive-text="停用" @change="roleUpdateStatus(scope.row)">
                     </el-switch>
                 </template>
             </el-table-column>
@@ -100,6 +100,45 @@ export default {
                 this.Loading = false
             }
         },
+        // 搜索
+        handleQuery() {
+            console.log("开始测试", this.queryParams)
+            this.getRoleList()
+        },
+        // 重置
+        resetQuery() {
+            this.queryParams = {}
+            this.getRoleList()
+            this.$message.success("重置成功")
+        },
+        // pageSize
+        handleSizeChange(newSize) {
+            this.queryParams.pageSize = newSize
+            this.getRoleList()
+        },
+        // pageNum
+        handleCurrentChange(newPage) {
+            this.queryParams.pageNum = newPage
+            this.getRoleList()
+        },
+        // 状态修改
+        async roleUpdateStatus(row) {
+            let text = row.status === 2 ? "停用" : "启用"
+            const confirmResult = await this.$confirm('确认要"' + text + '""' +
+                row.roleName + '"角色吗?', "警告", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+            }).catch(err => err)
+            if (confirmResult !== 'confirm') {
+                await this.getRoleList()
+                return this.$message.info('已取消删除')
+            }
+            await this.$api.updateRoleStatus(row.id, row.status)
+            return this.$message.success(text + "成功")
+            await this.getRoleList()
+        }
+
     },
     created() {
         this.getRoleList()
