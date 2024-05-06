@@ -29,7 +29,7 @@
         <!-- 操作按钮 -->
         <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
-                <el-button plain type="primary" icon="el-icon-plus" size="mini">
+                <el-button plain type="primary" icon="el-icon-plus" size="mini" @click="addRoleDialogVisible = true">
                     新增</el-button>
             </el-col>
         </el-row>
@@ -66,6 +66,33 @@
             :current-page="queryParams.pageNum" :page-sizes="[10, 50, 100, 500, 1000]" :page-size="queryParams.pageSize"
             layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
+
+
+        <!-- 新增角色 对话框 -->
+        <el-dialog title="新增角色" :visible.sync="addRoleDialogVisible" width="30%" @close="addRoleDialogClosed">
+            <el-form ref="addRoleFormRefForm" label-width="80px" :model="addRoleForm" :rules="addRoleFormRules">
+                <el-form-item label="角色名称" prop="roleName">
+                    <el-input placeholder="请输入角色名称" v-model="addRoleForm.roleName" />
+                </el-form-item>
+                <el-form-item label="角色标识" prop="roleKey">
+                    <el-input placeholder="请输入角色标识" v-model="addRoleForm.roleKey" />
+                </el-form-item>
+                <el-form-item label="角色状态" prop="status">
+                    <el-radio-group v-model="addRoleForm.status">
+                        <el-radio :label="1">正常</el-radio>
+                        <el-radio :label="2">停用</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="角色描述" prop="description">
+                    <el-input placeholder="请输入角色描述" type="textarea" v-model="addRoleForm.description" />
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="addRole">确 定</el-button>
+                <el-button type="primary" @click="addRoleDialogVisible = false">取 消
+                </el-button>
+            </span>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -84,7 +111,20 @@ export default {
             queryParams: {},
             Loading: false,
             roleList: [],
-            total: 0
+            total: 0,
+            addRoleDialogVisible: false,
+            addRoleForm: {
+                roleName: '',
+                roleKey: '',
+                description: '',
+                status: 1
+            },
+            addRoleFormRules: {
+                roleName: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
+                roleKey: [{ required: true, message: '请角色权限标识', trigger: 'blur' }],
+                status: [{ required: true, message: '请输入角色状态', trigger: 'blur' }],
+                description: [{ required: true, message: '请输入角色描述', trigger: 'blur' }],
+            },
         }
     },
     methods: {
@@ -137,7 +177,25 @@ export default {
             await this.$api.updateRoleStatus(row.id, row.status)
             return this.$message.success(text + "成功")
             await this.getRoleList()
-        }
+        },
+        // 监听添加角色对话框关闭
+        addRoleDialogClosed() {
+            this.$refs.addRoleFormRefForm.resetFields()
+        },
+        // 新增
+        addRole() {
+            this.$refs.addRoleFormRefForm.validate(async valid => {
+                if (!valid) return
+                const { data: res } = await this.$api.addRole(this.addRoleForm);
+                if (res.code !== 200) {
+                    this.$message.error(res.msg);
+                } else {
+                    this.$message.success("新增角色成功")
+                    this.addRoleDialogVisible = false
+                    await this.getRoleList()
+                }
+            })
+        },
 
     },
     created() {
