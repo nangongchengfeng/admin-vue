@@ -56,7 +56,7 @@
                     </el-button>
                     <el-button size="small" type="text" icon="el-icon-delete" @click="handleRoleDelete(scope.row)">删除
                     </el-button>
-                    <el-button size="small" type="text" icon="el-icon-setting">分配权限
+                    <el-button size="small" type="text" icon="el-icon-setting" @click="showSetMenuDialog(scope.row)">分配权限
                     </el-button>
                 </template>
             </el-table-column>
@@ -119,12 +119,27 @@
                 </el-button>
             </span>
         </el-dialog>
+
+        <!-- 分配权限 -->
+        <el-dialog title="分配权限" :visible.sync="setMenuDialogVisible" width="20%" @close="setRightDialogClosed">
+            <el-tree :data="menuList" :props="treeProps" show-checkbox node-key="id" default-expand-all
+                :default-checked-keys="defKeys" ref="treeRef">
+            </el-tree>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="allotMenus">确 定</el-button>
+                <el-button type="primary" @click="setMenuDialogVisible = false">取 消
+                </el-button>
+            </span>
+        </el-dialog>
     </el-card>
 </template>
 
 <script>
+import Treeselect from "@riophae/vue-treeselect"
+import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 export default {
     name: 'Role',
+    components: { Treeselect },
     data() {
         return {
             statusList: [{
@@ -159,6 +174,13 @@ export default {
                 status: [{ required: true, message: '请输入角色状态', trigger: 'blur' }],
                 description: [{ required: true, message: '请输入角色描述', trigger: 'blur' }],
             },
+            setMenuDialogVisible: false,
+            menuList: [],
+            treeProps: {
+                label: 'label'
+            },
+            defKeys: [],
+            id: '',
         }
     },
     methods: {
@@ -279,6 +301,46 @@ export default {
                 await this.getRoleList()
             }
         },
+        // 展示分配菜单权限对话框
+        showSetMenuDialog(role) {
+            this.id = role.id
+            // 显示全部菜单树
+            this.$api.querySysMenuVoList().then(res => {
+                this.menuList = this.$handleTree.handleTree(res.data.data, "id");
+            });
+            // 显示已有的菜单树
+            console.log(role.id)
+            this.$api.QueryRoleMenuIdList(role.id).then(res => {
+                console.log(res)
+            });
+            this.$api.QueryRoleMenuIdList(role.id).then(res => {
+                console.log(res)
+                this.defKeys = res.data.data;
+
+            });
+
+
+            this.setMenuDialogVisible = true
+        },
+        // 监听关闭对话框关闭事件
+        setRightDialogClosed() {
+            this.defKeys = []
+        },
+        // 分配菜单权限
+        async allotMenus() {
+            const keys = [
+                ...this.$refs.treeRef.getCheckedKeys(),
+                ...this.$refs.treeRef.getHalfCheckedKeys()
+            ]
+            const { data: res } = await this.$api.AssignPermissions(this.id, keys)
+            if (res.code !== 200) {
+                this.$message.error(res.msg)
+            } else {
+                this.$message.success('分配权限成功')
+                await this.getRoleList()
+                this.setMenuDialogVisible = false
+            }
+        }
 
     },
     created() {
