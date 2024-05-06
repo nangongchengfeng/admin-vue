@@ -73,8 +73,7 @@
                         </el-button>
                         <el-button size="small" type="text" icon="el-icon-delete" @click="handleAdminDelete(scope.row)">删除
                         </el-button>
-                        <el-button size="small" type="text" icon="el-icon-key">重
-                            置密码
+                        <el-button size="small" type="text" icon="el-icon-key" @click="handleResetPwd(scope.row)">重置密码
                         </el-button>
                     </template>
                 </el-table-column>
@@ -448,6 +447,21 @@ export default {
                 await this.getAdminList()
             }
         },
+        // 重置密码
+        handleResetPwd(row) {
+            this.$prompt('请输入"' + row.username + '"的新密码', "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                closeOnClickModal: false,
+                inputPattern: /^.{5,20}$/,
+                inputErrorMessage: "用户密码长度必须介于 5 和 20 之间"
+            }).then(({ value }) => {
+                this.$api.resetPassword(row.id, value).then(response => {
+                    this.$message.success("修改成功，新密码是：" + value);
+                });
+            }).catch(() => {
+            });
+        }
     },
     created() {
         this.getAdminList()
