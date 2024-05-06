@@ -71,7 +71,7 @@
                         <el-button size="small" type="text" icon="el-icon-edit" @click="showEditAdminDialog(scope.row.id)">
                             编辑
                         </el-button>
-                        <el-button size="small" type="text" icon="el-icon-delete">删除
+                        <el-button size="small" type="text" icon="el-icon-delete" @click="handleAdminDelete(scope.row)">删除
                         </el-button>
                         <el-button size="small" type="text" icon="el-icon-key">重
                             置密码
@@ -428,6 +428,25 @@ export default {
                     this.$message.success('修改用户成功')
                 }
             })
+        },
+        // 删除
+        async handleAdminDelete(row) {
+            const confirmResult = await this.$confirm('是否确认删除用户为"' + row.username +
+                '"的数据项？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).catch(err => err)
+            if (confirmResult !== 'confirm') {
+                return this.$message.info('已取消删除')
+            }
+            const { data: res } = await this.$api.deleteAdmin(row.id)
+            if (res.code !== 200) {
+                this.$message.error(res.msg)
+            } else {
+                this.$message.success('删除成功')
+                await this.getAdminList()
+            }
         },
     },
     created() {
