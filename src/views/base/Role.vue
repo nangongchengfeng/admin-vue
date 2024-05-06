@@ -307,16 +307,12 @@ export default {
             // 显示全部菜单树
             this.$api.querySysMenuVoList().then(res => {
                 this.menuList = this.$handleTree.handleTree(res.data.data, "id");
+                console.log(res.data.data)
             });
-            // 显示已有的菜单树
-            console.log(role.id)
-            this.$api.QueryRoleMenuIdList(role.id).then(res => {
-                console.log(res)
-            });
-            this.$api.QueryRoleMenuIdList(role.id).then(res => {
-                console.log(res)
-                this.defKeys = res.data.data;
 
+            this.$api.QueryRoleMenuIdList(role.id).then(res => {
+                this.defKeys = res.data.data;
+                console.log(res.data.data)
             });
 
 
