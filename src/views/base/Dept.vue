@@ -55,7 +55,7 @@
                 <el-table-column label="创建时间" prop="createTime" />
                 <el-table-column label="更多操作" class-name="small-padding fixed-width">
                     <template slot-scope="scope">
-                        <el-button size="mini" type="text" icon="el-icon-edit">修改
+                        <el-button size="mini" type="text" icon="el-icon-edit" @click="showEditDeptDialog(scope.row.id)">修改
                         </el-button>
                         <el-button size="mini" type="text" icon="el-icon-delete">删除
                         </el-button>
@@ -91,6 +91,37 @@
                     <el-button type="primary" @click="addDeptDialogVisible = false">取消</el-button>
                 </span>
             </el-dialog>
+
+            <!-- 编辑部门的页面 -->
+            <el-dialog title="编辑部门" :visible.sync="editDeptDialogVisible" width="30%">
+                <el-form :model="deptInfo" :rules="editDeptFormRules" ref="editDeptFormRefForm" label-width="80px">
+                    <el-form-item label="部门类型" prop="deptType">
+                        <el-radio-group v-model="deptInfo.deptType">
+                            <el-radio :label="1">公司</el-radio>
+                            <el-radio :label="2">中心</el-radio>
+                            <el-radio :label="3">部门</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                    <el-form-item size="mini" label="上级部门" prop="parentId" v-if="deptInfo.deptType != 1">
+                        <treeselect :options="optionsDeptList" placeholder="请选择上级部门" v-model="deptInfo.parentId" />
+                    </el-form-item>
+                    <el-form-item label="部门名称" prop="deptName">
+                        <el-input v-model="deptInfo.deptName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="部门状态" prop="deptStatus">
+                        <el-radio-group v-model="deptInfo.deptStatus">
+                            <el-radio :label="1">正常</el-radio>
+                            <el-radio :label="2">停用</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="editDept">确 定</el-button>
+                    <el-button type="primary" @click="editDeptDialogVisible = false">取 消
+                    </el-button>
+                </span>
+            </el-dialog>
+
         </el-card>
     </div>
 </template>
@@ -121,7 +152,14 @@ export default {
             },
             addDeptForm: {
                 deptStatus: 1
+            },
+            editDeptDialogVisible: false,
+            deptInfo: {},
+            editDeptFormRules: {
+                deptType: [{ required: true, message: "请选择部门类型", trigger: "blur" }],
+                deptName: [{ required: true, message: '请输入部门名称', trigger: 'blur' }],
             }
+
         }
     }, methods: {
         // 查询部门列表
@@ -186,6 +224,41 @@ export default {
         addDeptDialogClose() {
             this.$refs.addDeptFormRefForm.resetFields()
         },
+        // 展示编辑对话框
+        async showEditDeptDialog(id) {
+            const { data: res } = await this.$api.deptInfo(id)
+            if (res.code !== 200) {
+                this.$message.error(res.msg)
+            } else {
+                this.deptInfo = res.data
+                this.editDeptDialogVisible = true
+            }
+        },
+        // 监听编辑部门
+        /**
+         * 当编辑部门对话框关闭时调用此函数。
+         * 该函数重置表单字段，将其恢复到初始状态。
+         * 
+         */
+        editDeptDialogClosed() {
+            // 重置表单字段
+            this.$refs.editDeptFormRefForm.resetFields()
+        },
+        // 修改部门信息并提交
+        editDept() {
+            this.$refs.editDeptFormRefForm.validate(async valid => {
+                if (!valid) return
+                const { data: res } = await this.$api.deptUpdate(this.deptInfo)
+                if (res.code !== 200) {
+                    this.$message.error(res.msg)
+                } else {
+                    this.editDeptDialogVisible = false
+                    await this.getDeptList()
+                    this.$message.success("修改部门成功")
+                }
+
+            })
+        }
     },
     created() {
         this.getDeptList()
