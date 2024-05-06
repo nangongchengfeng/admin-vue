@@ -138,5 +138,53 @@ export default {
         })
     },
 
+    // 菜单
+    queryMenuList(params) {
+        return request({
+            url: "/menu/list",
+            method: 'get',
+            data: params
+        })
+    },
+    querySysMenuVoList() {
+        return request({
+            url: "/menu/vo/list",
+            method: 'get'
+        })
+    },
+    addMenu(data) {
+        return request({
+            url: '/menu/add',
+            method: 'post',
+            data: data
+        })
+    },
+    menuInfo(id) {
+        const data = {
+            id
+        }
+        return request({
+            url: '/menu/info',
+            method: 'get',
+            data: data
+        })
+    },
+    menuUpdate(data) {
+        return request({
+            url: '/menu/update',
+            method: 'put',
+            data: data
+        })
+    },
+    menuDelete(id) {
+        const data = {
+            id
+        }
+        return request({
+            url: '/menu/delete',
+            method: 'delete',
+            data: data
+        })
+    },
 
 }
