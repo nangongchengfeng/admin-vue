@@ -379,4 +379,39 @@ export default {
             data: data
         })
     },
+
+    // SysOperationLog操作日志
+    querySysOperationLogList(params) {
+        return request({
+            url: "/sysOperationLog/list",
+            method: 'get',
+            data: params
+        })
+    },
+    batchDeleteSysOperationLog(ids) {
+        const data = {
+            ids
+        }
+        return request({
+            url: '/sysOperationLog/batch/delete',
+            method: 'delete',
+            data: data
+        })
+    },
+    cleanSysOperationLog() {
+        return request({
+            url: '/sysOperationLog/clean',
+            method: 'delete'
+        })
+    },
+    deleteSysOperationLog(id) {
+        const data = {
+            id
+        }
+        return request({
+            url: '/sysOperationLog/delete',
+            method: 'delete',
+            data: data
+        })
+    },
 }
