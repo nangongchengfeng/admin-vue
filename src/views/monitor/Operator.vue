@@ -6,6 +6,12 @@
                 <el-input v-model="queryParams.username" placeholder="请输入用户名称" clearable size="mini"
                     @keyup.enter.native="handleQuery" />
             </el-form-item>
+                <el-form-item prop="loginStatus" label="请求状态">
+                    <el-select size="mini" placeholder="请选择请求状态" v-model="queryParams.request">
+                        <el-option v-for="item in RequestList" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
             <el-form-item prop="beginTime" label="开始时间">
                 <el-date-picker class="input-width" v-model="queryParams.beginTime" size="mini" type="date"
                     style="width: 190px" value-format="yyyy-MM-dd" clearable placeholder="请选择开始时间"
@@ -70,6 +76,19 @@ export default {
             total: 0,
             queryParams: {},
             sysOperationLogList: [],
+            RequestList: [{
+                value: 'get',
+                label: 'GET'
+            }, {
+                value: 'post',
+                label: 'POST'
+            },{
+                value: 'delete',
+                label: 'DELETE'
+            }, {
+                value: 'put',
+                label: 'PUT'
+            }],
         }
     },
     methods: {
