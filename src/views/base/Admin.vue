@@ -80,9 +80,8 @@
             </el-table>
             <!--分页区域-->
             <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                :current-page="queryParams.pageNum" :page-sizes="[10, 50, 100,
-                    500, 1000]" :page-size="queryParams.pageSize" layout="total, sizes, prev, pager, next, jumper"
-                :total="total">
+                :current-page="queryParams.pageNum" :page-sizes="[10, 50, 100, 500, 1000]" :page-size="queryParams.pageSize"
+                layout="total, sizes, prev, pager, next, jumper" :total="total">
             </el-pagination>
         </el-form>
         <!-- 添加用户 -->
