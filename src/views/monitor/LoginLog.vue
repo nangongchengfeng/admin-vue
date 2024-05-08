@@ -31,11 +31,12 @@
         <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
                 <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
-                    @click="batchHandleDelete">删除
+                    @click="batchHandleDelete" v-authority="['monitor:loginLog:delete']">删除
                 </el-button>
             </el-col>
             <el-col :span="1.5">
-                <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleClean">
+                <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleClean"
+                    v-authority="['monitor:loginLog:clean']">
                     清空</el-button>
             </el-col>
         </el-row>

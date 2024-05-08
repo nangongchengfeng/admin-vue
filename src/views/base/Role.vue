@@ -29,7 +29,8 @@
         <!-- 操作按钮 -->
         <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
-                <el-button plain type="primary" icon="el-icon-plus" size="mini" @click="addRoleDialogVisible = true">
+                <el-button plain type="primary" icon="el-icon-plus" size="mini" @click="addRoleDialogVisible = true"
+                    v-authority="['base:role:add']">
                     新增</el-button>
             </el-col>
         </el-row>
@@ -52,11 +53,14 @@
             <!-- 更多操作 -->
             <el-table-column label="更多操作">
                 <template slot-scope="scope">
-                    <el-button size="small" type="text" icon="el-icon-edit" @click="showEditRoleDialog(scope.row.id)">编辑
+                    <el-button size="small" type="text" icon="el-icon-edit" @click="showEditRoleDialog(scope.row.id)"
+                        v-authority="['base:role:edit']">编辑
                     </el-button>
-                    <el-button size="small" type="text" icon="el-icon-delete" @click="handleRoleDelete(scope.row)">删除
+                    <el-button size="small" type="text" icon="el-icon-delete" @click="handleRoleDelete(scope.row)"
+                        v-authority="['base:role:delete']">删除
                     </el-button>
-                    <el-button size="small" type="text" icon="el-icon-setting" @click="showSetMenuDialog(scope.row)">分配权限
+                    <el-button size="small" type="text" icon="el-icon-setting" @click="showSetMenuDialog(scope.row)"
+                        v-authority="['base:role:assign']">分配权限
                     </el-button>
                 </template>
             </el-table-column>

@@ -18,8 +18,8 @@
         </el-form>
         <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
-                <el-button type="primary" icon="el-icon-plus" size="mini"
-                    @click="addMenuDialogVisible = true">新增</el-button>
+                <el-button type="primary" icon="el-icon-plus" size="mini" @click="addMenuDialogVisible = true"
+                    v-authority="['base:menu:add']">新增</el-button>
             </el-col>
             <el-col :span="1.5">
                 <el-button type="info" icon="el-icon-sort" size="mini" @click="toggleExpandAll">折叠/展开</el-button>
@@ -63,9 +63,11 @@
             <el-table-column label="创建时间" prop="createTime" />
             <el-table-column label="更多操作" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                    <el-button size="mini" type="text" icon="el-icon-edit" @click="showEditMenuDialog(scope.row.id)">修改
+                    <el-button size="mini" type="text" icon="el-icon-edit" @click="showEditMenuDialog(scope.row.id)"
+                        v-authority="['base:menu:edit']">修改
                     </el-button>
-                    <el-button size="mini" type="text" icon="el-icon-delete" @click="handleMenuDelete(scope.row)">删除
+                    <el-button size="mini" type="text" icon="el-icon-delete" @click="handleMenuDelete(scope.row)"
+                        v-authority="['base:menu:delete']">删除
                     </el-button>
                 </template>
             </el-table-column>

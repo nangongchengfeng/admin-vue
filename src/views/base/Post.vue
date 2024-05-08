@@ -30,13 +30,13 @@
             <!-- 操作按钮 -->
             <el-row :gutter="10" class="mb8">
                 <el-col :span="1.5">
-                    <el-button plain type="primary" icon="el-icon-plus" size="mini"
-                        @click="addPostDialogVisible = true">新增</el-button>
+                    <el-button plain type="primary" icon="el-icon-plus" size="mini" @click="addPostDialogVisible = true"
+                        v-authority="['base:post:add']">新增</el-button>
 
                 </el-col>
                 <el-col :span="1.5">
                     <el-button plain type="danger" icon="el-icon-delete" size="mini" :disabled="multiple"
-                        @click="batchHandleDelete">删除
+                        @click="batchHandleDelete" v-authority="['base:post:delete']">删除
                     </el-button>
                 </el-col>
             </el-row>
@@ -60,10 +60,12 @@
                 <el-table-column label="描述" prop="remark" />
                 <el-table-column label="更多操作">
                     <template slot-scope="scope">
-                        <el-button size="small" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row.id)">
+                        <el-button size="small" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row.id)"
+                            v-authority="['base:post:edit']">
                             编辑
                         </el-button>
-                        <el-button size="small" type="text" icon="el-icon-delete" @click="handLeDelete(scope.row.id)">
+                        <el-button size="small" type="text" icon="el-icon-delete" @click="handLeDelete(scope.row.id)"
+                            v-authority="['base:post:delete']">
                             删除
                         </el-button>
                     </template>
