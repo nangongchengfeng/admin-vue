@@ -44,7 +44,15 @@
             <el-table-column type="selection" />
             <el-table-column label="ID" prop="id" v-if="false" />
             <el-table-column label="用户账号" prop="username" />
-            <el-table-column label="请求方式" prop="method" />
+            <el-table-column label="请求方式" prop="method">
+                <template slot-scope="scope">
+                    <el-tag v-if="scope.row.method === 'get'" type="success">GET</el-tag>
+                    <el-tag v-else-if="scope.row.method === 'post'" type="warning">POST</el-tag>
+                    <el-tag v-else-if="scope.row.method === 'put'" type="primary">PUT</el-tag>
+                    <el-tag v-else-if="scope.row.method === 'delete'" type="danger">DELETE</el-tag>
+                    <el-tag v-else type="info">{{ scope.row.method }}</el-tag>
+                </template>
+            </el-table-column>
             <el-table-column label="登录IP" prop="Ip" />
             <el-table-column label="请求的URL" prop="Url" />
             <el-table-column label="操作时间" prop="createTime" />
