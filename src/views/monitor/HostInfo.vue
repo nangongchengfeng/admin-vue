@@ -101,7 +101,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="less">
 .text {
     font-size: 14px;
 }
