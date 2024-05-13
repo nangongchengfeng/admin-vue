@@ -17,6 +17,7 @@ import Post from "@/views/base/Post"
 import Personal from "@/views/Personal"
 import Operator from "@/views/monitor/Operator"
 import LoginLog from "@/views/monitor/LoginLog"
+import HostInfo from "@/views/monitor/HostInfo"
 
 /**
  * 注册一个全局的插件到 Vue。
@@ -88,6 +89,11 @@ const router = new Router({
                     path: '/monitor/LoginLog',
                     component: LoginLog,
                     meta: { sTitle: '监控管理', tTitle: '登录日志' }
+                },
+                {
+                    path: '/monitor/HostInof',
+                    component: HostInfo,
+                    meta: { sTitle: '监控管理', tTitle: '主机信息' }
                 }
             ]
         }

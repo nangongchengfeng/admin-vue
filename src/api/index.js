@@ -414,4 +414,11 @@ export default {
             data: data
         })
     },
+    // GetHostInfo 
+    getHostInfo() {
+        return request({
+            url: "/hostInfo",
+            method: 'get'
+        })
+    },
 }
